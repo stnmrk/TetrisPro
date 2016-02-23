@@ -9,57 +9,48 @@ import Tkinter
 #===============================================================================
 # global constant
 #===============================================================================
-BOARD_WIDTH = 40 #Hur stort fönstret ska vara
-BOARD_HEIGHT = 40 
+BOARD_WIDTH = 12 #Hur stort fönstret ska vara
+BOARD_HEIGHT = 24 
 
-UNIT_X = 15 #Hur många pixlar varje "unit" är
-UNIT_Y = 15 
+UNIT_X = 18 #Hur många pixlar varje "unit" är
+UNIT_Y = 18 
 
 PIECE_INIT_X = 3 #Kordinater för startpositionen, startar ovanför skärmen så att man inte ser biten direkt
 PIECE_INIT_Y = -4 
 
-DIFFICULTY = 2
+DIFFICULTY = 1
 
-BACKGROUND_COLOR = 'black'
+BACKGROUND_COLOR = '#333'
 
 #===============================================================================
 # piece
 #===============================================================================
     #Färg på alla bitarna
-I_PIECE_EASY = 0xf
-I_PIECE_NORMAL = 0xf
-I_PIECE_HARD = 0xf
+I_PIECE_EASY = 1
+L_PIECE_EASY = 3
+O_PIECE_EASY = 4
 
-J_PIECE_NORMAL = 0x2e
-J_PIECE_HARD = 0x2e
+I_PIECE_NORMAL = 1
+J_PIECE_NORMAL = 2
+L_PIECE_NORMAL = 3
+O_PIECE_NORMAL = 4
+S_PIECE_NORMAL = 8
+T_PIECE_NORMAL = 9
+Z_PIECE_NORMAL = 10
 
-L_PIECE_EASY = 0x47
-L_PIECE_NORMAL = 0x47
-L_PIECE_HARD = 0x47
-
-O_PIECE_EASY = 0x66d
-O_PIECE_NORMAL = 0x66
-O_PIECE_HARD = 0x66
-
-X_PIECE_HARD = 0xC6
-
-H_PIECE_HARD = 0x27
-
-Y_PIECE_HARD = 0x6C
-
-S_PIECE_NORMAL = 0xC6
-
-T_PIECE_NORMAL = 0x27
-
-Z_PIECE_NORMAL = 0x6C
+I_PIECE_HARD = 1
+J_PIECE_HARD = 2
+L_PIECE_HARD = 3
+O_PIECE_HARD = 4
+X_PIECE_HARD = 5
+H_PIECE_HARD = 6
+Y_PIECE_HARD = 7
 
 if DIFFICULTY == 0:
 
     ALL_PIECES = [ #Namn på alla bitar
         I_PIECE_EASY,
-        
         L_PIECE_EASY,
-       
         O_PIECE_EASY
     ]
 
