@@ -297,16 +297,12 @@ def tick(e=None):
 
     if keys == 'Left':
         move_piece_left()
-        print ">Pressed Left" + ctime()
     elif keys == 'Right':
         move_piece_right()
-        print ">Pressed Right" + ctime()
     elif keys == 'Up':
         rotate_piece()
-        print ">Pressed Up (Rotate)" + ctime()
     elif keys == 'Down':
         fall_piece()
-        print ">Pressed Down (Fall)" + ctime()
 
 
     if e == None:
@@ -351,7 +347,6 @@ def init_tetris(): #Anropar alla funktioner som behövs för att börja spela, s
     board = new_board_lines(BOARD_HEIGHT)
     piece, pc = new_piece() 
     reset_score()
-    print ">init_tetris | " + ctime()
 
     scr = Tkinter.Canvas(width=map_to_ui_x(BOARD_WIDTH), height=map_to_ui_y(BOARD_HEIGHT), bg=BACKGROUND_COLOR)
     scr.after(300, tick)
@@ -364,6 +359,5 @@ def init_tetris(): #Anropar alla funktioner som behövs för att börja spela, s
  # print px,py
 
 if __name__ == '__main__':
-    print ">__main__" + ctime()
-    init_tetris()
 
+    init_tetris()
