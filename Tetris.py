@@ -1,31 +1,26 @@
-﻿
-
-# -*- coding: utf-8 -*-
-import copy
+﻿import copy
 import random
 import sys
+import time
 import Tkinter
+from tkMessageBox import *
 
-#===============================================================================
-# global constant
-#===============================================================================
-BOARD_WIDTH = 12 #Hur stort fönstret ska vara
+BOARD_WIDTH = 12
 BOARD_HEIGHT = 24 
 
-UNIT_X = 18 #Hur många pixlar varje "unit" är
+UNIT_X = 18
 UNIT_Y = 18 
 
-PIECE_INIT_X = 3 #Kordinater för startpositionen, startar ovanför skärmen så att man inte ser biten direkt
+# Centrering av  tetrominoerna (alltså klossarna)
+PIECE_INIT_X = 3
 PIECE_INIT_Y = -4 
 
 DIFFICULTY = 1
 
-BACKGROUND_COLOR = '#333'
+BACKGROUND_COLOR = '#0f0f0f'
 
 #===============================================================================
-# piece
-#===============================================================================
-    #Färg på alla bitarna
+
 I_PIECE_EASY = 1
 L_PIECE_EASY = 3
 O_PIECE_EASY = 4
@@ -46,9 +41,11 @@ X_PIECE_HARD = 5
 H_PIECE_HARD = 6
 Y_PIECE_HARD = 7
 
+# Svårighetsgrad | 0-2 | 0 = easy, 1 = normal, 2 = hard
+
 if DIFFICULTY == 0:
 
-    ALL_PIECES = [ #Namn på alla bitar
+    ALL_PIECES = [
         I_PIECE_EASY,
         L_PIECE_EASY,
         O_PIECE_EASY
@@ -56,80 +53,59 @@ if DIFFICULTY == 0:
 
 if DIFFICULTY == 1:
 
-    ALL_PIECES = [ #Namn på alla bitar
+    ALL_PIECES = [
         I_PIECE_NORMAL,
-
         J_PIECE_NORMAL,
-
         L_PIECE_NORMAL,
-
         O_PIECE_NORMAL,
-
         S_PIECE_NORMAL,
-
         T_PIECE_NORMAL,
-
         Z_PIECE_NORMAL
     ]
 
 if DIFFICULTY == 2:
 
-    ALL_PIECES = [ #Namn på alla bitar
+    ALL_PIECES = [
         I_PIECE_HARD,
-
         J_PIECE_HARD,
-
         L_PIECE_HARD,
-
         O_PIECE_HARD,
-
         X_PIECE_HARD,
-
         H_PIECE_HARD,
-
         Y_PIECE_HARD
     ]
 
 PIECE_COLOR = { #Färg på alla bitar
-    I_PIECE_EASY: "red",
-    I_PIECE_NORMAL: "red",
-    I_PIECE_HARD: "red",
+    I_PIECE_EASY: "#F95760",
+    I_PIECE_NORMAL: "#F95760",
+    I_PIECE_HARD: "#F95760",
 
-    J_PIECE_NORMAL: "green",
-    J_PIECE_HARD: "green",
+    J_PIECE_NORMAL: "#FDB171",
+    J_PIECE_HARD: "#FDB171",
 
-    L_PIECE_EASY: "blue",
-    L_PIECE_NORMAL: "blue",
-    L_PIECE_HARD: "blue",
+    L_PIECE_EASY: "#F1C76D",
+    L_PIECE_NORMAL: "#F1C76D",
+    L_PIECE_HARD: "#F1C76D",
 
-    O_PIECE_EASY: "yellow",
-    O_PIECE_NORMAL: "yellow",
-    O_PIECE_HARD: "yellow",
+    O_PIECE_EASY: "#5DCFA2",
+    O_PIECE_NORMAL: "#5DCFA2",
+    O_PIECE_HARD: "#5DCFA2",
 
-    X_PIECE_HARD: "orange",
+    X_PIECE_HARD: "#42C3D7",
+    H_PIECE_HARD: "#81B1E7",
+    Y_PIECE_HARD: "#80809C",
 
-    H_PIECE_HARD: "blue",
-
-    Y_PIECE_HARD: "pink",
-
-    S_PIECE_NORMAL: "purple",
-
-    T_PIECE_NORMAL: "white",
-
-    Z_PIECE_NORMAL: "brown"
+    S_PIECE_NORMAL: "#D85BAA",
+    T_PIECE_NORMAL: "#81B1E7",
+    Z_PIECE_NORMAL: "#80809C"
 }
-
-"""
-shape = lambda pc: [((z >> 2) + 1, z & 3) for z in range(16) if (pc >> z) & 1]
-"""
-
 
 if DIFFICULTY == 0:
 
     PIECE_SHAPE = {
         I_PIECE_EASY: [(1, 0), (1, 1)],
         L_PIECE_EASY: [(1, 0), (1, 1), (2, 1)],
-        O_PIECE_EASY: [(1, 0), (1, 1), (2, 0), (2, 1)] #Skapar de olika bitarna genom kordinater
+        O_PIECE_EASY: [(1, 0), (1, 1), (2, 0), (2, 1)]
     }
 
 elif DIFFICULTY == 1:
@@ -154,6 +130,10 @@ elif DIFFICULTY == 2:
         Y_PIECE_HARD: [(1, 0), (2, 1), (2, 2), (3, 0)]
     }
 
+"""
+shape = lambda pc: [((z >> 2) + 1, z & 3) for z in range(16) if (pc >> z) & 1]
+"""
+
 def new_piece(): #Gör att nästa bit som skapas är en slumpmässigt vald av bitarna i "ALL_PIECES"
     p = random.choice(ALL_PIECES)
     p_shape = copy.deepcopy(PIECE_SHAPE[p])
@@ -161,10 +141,8 @@ def new_piece(): #Gör att nästa bit som skapas är en slumpmässigt vald av bi
 
 
 #===============================================================================
-# piece : action
-#===============================================================================
 """
-    npx = px + (-1 if keys == "Left" else (1 if keys == "Right" else 0)) # 左-1右1否則0
+    npx = px + (-1 if keys == "Left" else (1 if keys == "Right" else 0)) 
     npiece = [(j, 3 - i) for (i, j) in piece] if keys == "Up" else piece   #rotate
     if not collide(npiece, npx, py):
         piece, px = npiece, npx
@@ -201,13 +179,12 @@ def fall_piece(): #Gör att biten faller nedåt 1 ruta i taget tills den antinge
 
 
 #===============================================================================
-# drawing transform
-#===============================================================================
-def map_to_ui_x(i): #Uppdaterar det visuella, att biten åker höger/vänster
+
+def map_to_ui_x(i): 
     return i * UNIT_X 
 
 
-def map_to_ui_y(j): #Uppdaterar när biten flyttas nedåt
+def map_to_ui_y(j):
     return j * UNIT_Y 
 
 
@@ -232,32 +209,28 @@ def redraw_ui():
             color = PIECE_COLOR.get(board[j][i], BACKGROUND_COLOR)
         ui_create_rect(i, j, color)
 
+#===============================================================================
 
-#===============================================================================
-# score
-#===============================================================================
 def reset_score():
     global score
-    score = 0 #Startar om scoren från 0 när spelet börjar
+    score = 0
 
 
 def get_score():
-    return score #Hämtar scoren som sedan anropas för att visa den vid "game over"
+    return score 
 
 
 def incr_score(value):
     global score
     assert isinstance(value, int), value
-    score += value #Ökar scoren varje gång en line clearas
-
+    score += value
 
 #===============================================================================
-# collide
-#===============================================================================
+
 """
-collide = lambda piece, px, py: [1 for (i, j) in piece if board[j + py][i + px]] #是否碰撞
+collide = lambda piece, px, py: [1 for (i, j) in piece if board[j + py][i + px]]
 """
-def collide(piece, px, py): #Gör att biten stannar när den landar på en annan bit eller når botten av planen
+def collide(piece, px, py): 
     assert isinstance(px, int), px
     assert isinstance(py, int), py
     for (i, j) in piece:
@@ -273,10 +246,8 @@ def collide(piece, px, py): #Gör att biten stannar när den landar på en annan
             return True
     return False 
 
+#===============================================================================
 
-#===============================================================================
-# board
-#===============================================================================
 def new_board_lines(num):
     assert isinstance(num, int), num
     return [[0] * BOARD_WIDTH for j in range(num)]
@@ -300,7 +271,7 @@ def place_piece(piece, px, py, pc): #Tillåter dig att flytta biten åt höger/v
         board[y][x] = pc 
 
 
-def clear_complete_lines(): #Tar bort en line när den blir helt fylld
+def clear_complete_lines():
     global board
     nb = [l for l in board if 0 in l] # 
     s = len(board) - len(nb)
@@ -308,17 +279,13 @@ def clear_complete_lines(): #Tar bort en line när den blir helt fylld
         board = new_board_lines(s) + nb
     return s
 
+#===============================================================================
+
+def game_over():
+        showerror("Answer", "GAME OVER: score %i" % get_score())
 
 #===============================================================================
-# 
-#===============================================================================
-def game_over(): #Säger gameover och hämtar scoren
-    sys.exit("GAME OVER: score %i" % get_score()) 
 
-
-#===============================================================================
-# tick
-#===============================================================================
 def tick(e=None):
     global piece, px, py, pc
 
@@ -355,10 +322,8 @@ def tick(e=None):
 
     redraw_ui() #Uppdaterar UI hela tiden
 
+#===============================================================================
 
-#===============================================================================
-# initial
-#===============================================================================
 board = None
 piece = None
 pc = None
@@ -371,7 +336,7 @@ def init_tetris(): #Anropar alla funktioner som behövs för att börja spela, s
     global board, piece, pc, scr
     board = new_board_lines(BOARD_HEIGHT)
     piece, pc = new_piece() 
-    reset_score() 
+    reset_score()
 
     scr = Tkinter.Canvas(width=map_to_ui_x(BOARD_WIDTH), height=map_to_ui_y(BOARD_HEIGHT), bg=BACKGROUND_COLOR)
     scr.after(300, tick)
