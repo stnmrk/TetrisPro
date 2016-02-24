@@ -5,15 +5,15 @@ import time
 import Tkinter
 from tkMessageBox import *
 
-BOARD_WIDTH = 12
-BOARD_HEIGHT = 24 
+BOARD_WIDTH = 10 # 10
+BOARD_HEIGHT = 24 # 24
 
-UNIT_X = 18
+UNIT_X = 18 # 18
 UNIT_Y = 18 
 
 # Centrering av  tetrominoerna (alltså klossarna)
-PIECE_INIT_X = 3
-PIECE_INIT_Y = -4 
+PIECE_INIT_X = 3 # 3
+PIECE_INIT_Y = -4  # -4
 
 DIFFICULTY = 1
 
@@ -183,10 +183,8 @@ def fall_piece(): #Gör att biten faller nedåt 1 ruta i taget tills den antinge
 def map_to_ui_x(i): 
     return i * UNIT_X 
 
-
 def map_to_ui_y(j):
     return j * UNIT_Y 
-
 
 def ui_create_rect(i, j, color):
     assert isinstance(i, int), i
@@ -196,7 +194,6 @@ def ui_create_rect(i, j, color):
     x1 = map_to_ui_x(i + 1)
     y1 = map_to_ui_y(j + 1)
     scr.create_rectangle(x0, y0, x1, y1, fill=color)
-
 
 def redraw_ui():
     piece_region = [(i + px, j + py) for i, j in piece]
@@ -252,9 +249,7 @@ def new_board_lines(num):
     assert isinstance(num, int), num
     return [[0] * BOARD_WIDTH for j in range(num)]
 
-
 board = new_board_lines(BOARD_HEIGHT)
-
 
 def place_piece(piece, px, py, pc): #Tillåter dig att flytta biten åt höger/vänster/nedåt så länge den inte blockeras av en annan bit eller planens kant/botten
     """
@@ -270,8 +265,15 @@ def place_piece(piece, px, py, pc): #Tillåter dig att flytta biten åt höger/v
             continue
         board[y][x] = pc 
 
-
 def clear_complete_lines():
+    global board
+    nb = [l for l in board if 0 in l] # 
+    s = len(board) - len(nb)
+    if s:
+        board = new_board_lines(s) + nb
+    return s
+
+def tjena():
     global board
     nb = [l for l in board if 0 in l] # 
     s = len(board) - len(nb)
@@ -283,6 +285,8 @@ def clear_complete_lines():
 
 def game_over():
         showerror("Answer", "GAME OVER: score %i" % get_score())
+        #restore_tetris()
+        #tjena()
 
 #===============================================================================
 
@@ -293,12 +297,17 @@ def tick(e=None):
 
     if keys == 'Left':
         move_piece_left()
+        print ">Pressed Left" + ctime()
     elif keys == 'Right':
         move_piece_right()
+        print ">Pressed Right" + ctime()
     elif keys == 'Up':
         rotate_piece()
+        print ">Pressed Up (Rotate)" + ctime()
     elif keys == 'Down':
-        fall_piece() #Anropar funktionerna när piltangenterna används
+        fall_piece()
+        print ">Pressed Down (Fall)" + ctime()
+
 
     if e == None:
         if collide(piece, px, py + 1):
@@ -317,6 +326,7 @@ def tick(e=None):
         s = clear_complete_lines()
         if s:
             incr_score(2 ** s) 
+            print score
 
         scr.after(300, tick)
 
@@ -332,11 +342,16 @@ py = PIECE_INIT_Y
 score = 0
 scr = None
 
+def ctime():
+    ctime = str(time.time())
+    return ctime
+
 def init_tetris(): #Anropar alla funktioner som behövs för att börja spela, spelplan, bitarna som kommer användas och att scoren startar på 0
     global board, piece, pc, scr
     board = new_board_lines(BOARD_HEIGHT)
     piece, pc = new_piece() 
     reset_score()
+    print ">init_tetris | " + ctime()
 
     scr = Tkinter.Canvas(width=map_to_ui_x(BOARD_WIDTH), height=map_to_ui_y(BOARD_HEIGHT), bg=BACKGROUND_COLOR)
     scr.after(300, tick)
@@ -346,8 +361,9 @@ def init_tetris(): #Anropar alla funktioner som behövs för att börja spela, s
 
 #  for line in board: print '\t'.join(str(v) for v in line)
 #  print len(board)
-#  print px,py
+ # print px,py
 
 if __name__ == '__main__':
+    print ">__main__" + ctime()
     init_tetris()
 
