@@ -2,7 +2,9 @@
 import random
 import sys
 import time
+import threading
 import Tkinter
+from Tkinter import *
 from tkMessageBox import *
 
 BOARD_WIDTH = 12
@@ -15,7 +17,7 @@ UNIT_Y = 18
 PIECE_INIT_X = 3
 PIECE_INIT_Y = -4 
 
-DIFFICULTY = 1
+DIFFICULTY = 2
 
 BACKGROUND_COLOR = '#0f0f0f'
 
@@ -91,12 +93,12 @@ PIECE_COLOR = { #Färg på alla bitar
     O_PIECE_NORMAL: "#5DCFA2",
     O_PIECE_HARD: "#5DCFA2",
 
-    X_PIECE_HARD: "#42C3D7",
-    H_PIECE_HARD: "#81B1E7",
+    X_PIECE_HARD: "#D85BAA",
+    H_PIECE_HARD: "#42C3D7",
     Y_PIECE_HARD: "#80809C",
 
     S_PIECE_NORMAL: "#D85BAA",
-    T_PIECE_NORMAL: "#81B1E7",
+    T_PIECE_NORMAL: "#42C3D7",
     Z_PIECE_NORMAL: "#80809C"
 }
 
@@ -133,11 +135,16 @@ elif DIFFICULTY == 2:
 """
 shape = lambda pc: [((z >> 2) + 1, z & 3) for z in range(16) if (pc >> z) & 1]
 """
+def callback():
+    init_tetris()
 
 def new_piece(): #Gör att nästa bit som skapas är en slumpmässigt vald av bitarna i "ALL_PIECES"
     p = random.choice(ALL_PIECES)
     p_shape = copy.deepcopy(PIECE_SHAPE[p])
     return p_shape, p   
+
+def testfunc():
+    threading.Timer(1.0, testfunc).start()
 
 
 #===============================================================================
@@ -283,6 +290,7 @@ def clear_complete_lines():
 
 def game_over():
         showerror("Answer", "GAME OVER: score %i" % get_score())
+        sys.exit(0)
 
 #===============================================================================
 
@@ -290,15 +298,24 @@ def tick(e=None):
     global piece, px, py, pc
 
     keys = e.keysym if e else  "" # get key event
-
-    if keys == 'Left':
-        move_piece_left()
-    elif keys == 'Right':
-        move_piece_right()
-    elif keys == 'Up':
-        rotate_piece()
-    elif keys == 'Down':
-        fall_piece() #Anropar funktionerna när piltangenterna används
+    if PLAYER == 0:
+        if keys == 'Left':
+            move_piece_left()
+        elif keys == 'Right':
+            move_piece_right()
+        elif keys == 'Up':
+            rotate_piece()
+        elif keys == 'Down':
+            fall_piece() #Anropar funktionerna när piltangenterna används
+    else: 
+        if keys == "a":
+            move_piece_left()
+        elif keys == 'd':
+            move_piece_right()
+        elif keys == 'w':
+            rotate_piece()
+        elif keys == 's':
+            fall_piece()
 
     if e == None:
         if collide(piece, px, py + 1):
@@ -313,12 +330,11 @@ def tick(e=None):
 
         else:
             py += 1
-
         s = clear_complete_lines()
         if s:
             incr_score(2 ** s) 
 
-        scr.after(300, tick)
+        scr.after(256, tick)
 
     redraw_ui() #Uppdaterar UI hela tiden
 
@@ -331,8 +347,11 @@ px = PIECE_INIT_X
 py = PIECE_INIT_Y
 score = 0
 scr = None
+PLAYER = 0
+
 
 def init_tetris(): #Anropar alla funktioner som behövs för att börja spela, spelplan, bitarna som kommer användas och att scoren startar på 0
+    
     global board, piece, pc, scr
     board = new_board_lines(BOARD_HEIGHT)
     piece, pc = new_piece() 
@@ -344,10 +363,11 @@ def init_tetris(): #Anropar alla funktioner som behövs för att börja spela, s
     scr.pack()
     scr.mainloop()
 
+
 #  for line in board: print '\t'.join(str(v) for v in line)
 #  print len(board)
 #  print px,py
 
 if __name__ == '__main__':
-    init_tetris()
-
+    callback()
+    mainloop()
